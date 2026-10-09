@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: imperial-db
+    environment:
+      POSTGRES_DB: imperial
+      POSTGRES_USER: ${DB_USER:-imperial_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-imperial_secret_2024}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-imperial_user} -d imperial"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - imperial-net
+
+  api:
+    build: .
+    container_name: imperial-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/imperial
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-imperial_user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-imperial_secret_2024}
+      SPRING_DATASOURCE_DRIVER: org.postgresql.Driver
+      JWT_SECRET: ${JWT_SECRET:-imperial-secret-key-super-secure-must-be-at-least-256-bits-long-2024}
+    ports:
+      - "8080:8080"
+    networks:
+      - imperial-net
+
+volumes:
+  pgdata:
+
+networks:
+  imperial-net:

@@ -1,0 +1,55 @@
+{
+  "id": "e5b8d2b7-8d26-4475-a8f8-b3917d23d8c1",
+  "name": "Imperial QR - Local Environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "codigoQr",
+      "value": "550e8400-e29b-41d4-a716-446655440005",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "tokenAdmin",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "tokenCocinero",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "tokenMesero",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "ordenId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "detalleId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "domicilioId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

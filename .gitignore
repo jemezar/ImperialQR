@@ -1,0 +1,48 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-check
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradletask/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Secrets and Environment ###
+.env
+.env.local
+*.log
+
+### OS Files ###
+Thumbs.db
+.DS_Store
+
+### Temporary Scratch Files ###
+doc_dump.txt
+core_design.txt
+tables_summary.txt
+key_tables_read.txt
+sections_detail.txt

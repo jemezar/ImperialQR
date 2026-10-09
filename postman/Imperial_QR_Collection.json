@@ -1,0 +1,811 @@
+{
+  "info": {
+    "_postman_id": "c1f7a08b-4b17-48ec-bcf8-921d7b1d68a9",
+    "name": "Imperial QR - API Collection",
+    "description": "Colección completa de pruebas de la API REST para el sistema Imperial QR del Restaurante Imperial. Cubre todos los escenarios de la Tabla 16 y los flujos de la memoria técnica.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Autenticación",
+      "item": [
+        {
+          "name": "PF-01 Login Admin Exitoso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.token).to.be.a('string');",
+                  "    pm.expect(json.rol).to.eql('ADMIN');",
+                  "    pm.environment.set(\"tokenAdmin\", json.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@imperial.com\",\n  \"password\": \"Imperial123*\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "PF-01 Login Cocinero",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.environment.set(\"tokenCocinero\", json.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"cocina@imperial.com\",\n  \"password\": \"Imperial123*\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "PF-01 Login Mesero",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.environment.set(\"tokenMesero\", json.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mesero@imperial.com\",\n  \"password\": \"Imperial123*\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "PF-01 Login Fallido - Clave Incorrecta",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 403 Forbidden\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@imperial.com\",\n  \"password\": \"ClaveErronea123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Carta y Mesas",
+      "item": [
+        {
+          "name": "PF-02 Consultar Carta Pública",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK y devuelve categorías\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.length).to.be.above(0);",
+                  "    pm.expect(json[0].platos.length).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/carta",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "carta"]
+            }
+          }
+        },
+        {
+          "name": "PF-03 Consultar Mesa por QR Válido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK y mesa encontrada\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.numero).to.eql(5);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/mesas/qr/{{codigoQr}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "mesas", "qr", "{{codigoQr}}"]
+            }
+          }
+        },
+        {
+          "name": "PF-03 Consultar Mesa QR Inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/mesas/qr/non-existent-uuid",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "mesas", "qr", "non-existent-uuid"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Pedidos en Mesa",
+      "item": [
+        {
+          "name": "PF-04 Crear Pedido Personalizado Válido (RN-03)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Responde 201 y crea la orden abierta\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body.estado).to.eql(\"ABIERTA\");",
+                  "    pm.expect(body.detalles[0].estado).to.eql(\"RECIBIDO\");",
+                  "    pm.expect(body.detalles[0].precioUnitario).to.eql(27000);",
+                  "    pm.environment.set(\"ordenId\", body.id);",
+                  "    pm.environment.set(\"detalleId\", body.detalles[0].id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoQr\": \"{{codigoQr}}\",\n  \"items\": [\n    {\n      \"platoId\": 1,\n      \"cantidad\": 1,\n      \"observaciones\": \"Poco picante\",\n      \"modificaciones\": [\n        { \"ingredienteId\": 1, \"accion\": \"QUITAR\" },\n        { \"ingredienteId\": 4, \"accion\": \"AGREGAR\" }\n      ]\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ordenes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "ordenes"]
+            }
+          }
+        },
+        {
+          "name": "PF-05 Crear Pedido Quitando Ingrediente No Removible (RN-02)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 422 Regla de Negocio No Cumplida\", function () {",
+                  "    pm.response.to.have.status(422);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoQr\": \"{{codigoQr}}\",\n  \"items\": [\n    {\n      \"platoId\": 1,\n      \"cantidad\": 1,\n      \"modificaciones\": [\n        { \"ingredienteId\": 4, \"accion\": \"QUITAR\" }\n      ]\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ordenes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "ordenes"]
+            }
+          }
+        },
+        {
+          "name": "PF-09 Cliente Adiciona Plato a Orden Abierta",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.detalles.length).to.be.above(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoQr\": \"{{codigoQr}}\",\n  \"items\": [\n    {\n      \"platoId\": 6,\n      \"cantidad\": 2,\n      \"observaciones\": \"Frío\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ordenes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "ordenes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Cocina y Mesero",
+      "item": [
+        {
+          "name": "PF-06 Cocinero Lista Comandas Pendientes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenCocinero}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/cocina/pendientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "cocina", "pendientes"]
+            }
+          }
+        },
+        {
+          "name": "PF-06 Cocinero Pasa Plato a EN_PREPARACION",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK y estado EN_PREPARACION\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().estado).to.eql(\"EN_PREPARACION\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenCocinero}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nuevoEstado\": \"EN_PREPARACION\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/detalles/{{detalleId}}/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "detalles", "{{detalleId}}", "estado"]
+            }
+          }
+        },
+        {
+          "name": "PF-06 Cocinero Pasa Plato a LISTO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK y estado LISTO\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().estado).to.eql(\"LISTO\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenCocinero}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nuevoEstado\": \"LISTO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/detalles/{{detalleId}}/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "detalles", "{{detalleId}}", "estado"]
+            }
+          }
+        },
+        {
+          "name": "PF-07 Cocinero Intenta Marcar ENTREGADO (Rechazado RN-06)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 403 Forbidden\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenCocinero}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nuevoEstado\": \"ENTREGADO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/detalles/{{detalleId}}/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "detalles", "{{detalleId}}", "estado"]
+            }
+          }
+        },
+        {
+          "name": "PF-08 Mesero Lista Platos Listos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenMesero}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/mesero/listos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "mesero", "listos"]
+            }
+          }
+        },
+        {
+          "name": "PF-08 Mesero Marca ENTREGADO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK y estado ENTREGADO\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().estado).to.eql(\"ENTREGADO\");",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenMesero}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nuevoEstado\": \"ENTREGADO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/detalles/{{detalleId}}/estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "detalles", "{{detalleId}}", "estado"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Cierre, Pago y Encuesta",
+      "item": [
+        {
+          "name": "PF-10 Admin Cierra Cuenta",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 200 OK y orden CERRADA con totales calculados\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.estado).to.eql(\"CERRADA\");",
+                  "    pm.expect(json.total).to.be.above(0);",
+                  "    pm.environment.set(\"totalOrden\", json.total);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"incluirPropina\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ordenes/{{ordenId}}/cierre",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "ordenes", "{{ordenId}}", "cierre"]
+            }
+          }
+        },
+        {
+          "name": "PF-11 Registrar Pago Parcial",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201 Created y orden aún CERRADA\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metodo\": \"TARJETA\",\n  \"monto\": 20000,\n  \"referencia\": \"AUTH-CARD-789\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ordenes/{{ordenId}}/pagos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "ordenes", "{{ordenId}}", "pagos"]
+            }
+          }
+        },
+        {
+          "name": "PF-11 Registrar Pago Total / Saldo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201 Created y orden pasa a PAGADA\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metodo\": \"EFECTIVO\",\n  \"monto\": 50000,\n  \"referencia\": \"EFECTIVO-CAJA-01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ordenes/{{ordenId}}/pagos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "ordenes", "{{ordenId}}", "pagos"]
+            }
+          }
+        },
+        {
+          "name": "PF-12 Registrar Encuesta de Satisfacción (RN-11)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    pm.expect(pm.response.json().calComida).to.eql(5);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calComida\": 5,\n  \"calServicio\": 5,\n  \"calGeneral\": 5,\n  \"comentario\": \"Excelente experiencia al wok, el arroz especial impecable.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ordenes/{{ordenId}}/encuesta",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "ordenes", "{{ordenId}}", "encuesta"]
+            }
+          }
+        },
+        {
+          "name": "PF-12 Encuesta Repetida Lanza Conflicto (RN-11)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calComida\": 4,\n  \"calServicio\": 4,\n  \"calGeneral\": 4\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ordenes/{{ordenId}}/encuesta",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "ordenes", "{{ordenId}}", "encuesta"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Domicilios",
+      "item": [
+        {
+          "name": "PF-13 Crear Domicilio Completo Válido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    var json = pm.response.json();",
+                  "    pm.environment.set(\"domicilioId\", json.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreCliente\": \"María Fernanda Calle\",\n  \"telefono\": \"3105559876\",\n  \"direccion\": \"Carrera 15 # 85-30 Torre 2 Apto 501\",\n  \"notasDireccion\": \"Timbre 501\",\n  \"costoEnvio\": 6000,\n  \"items\": [\n    {\n      \"platoId\": 3,\n      \"cantidad\": 1,\n      \"observaciones\": \"Sin sal extra\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/domicilios",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "domicilios"]
+            }
+          }
+        },
+        {
+          "name": "PF-13 Crear Domicilio Sin Dirección (Falla RN-12)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombreCliente\": \"María Calle\",\n  \"telefono\": \"3105559876\",\n  \"direccion\": \"\",\n  \"costoEnvio\": 6000,\n  \"items\": [{ \"platoId\": 3, \"cantidad\": 1 }]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/domicilios",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "domicilios"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Reportes y Dashboard (Admin)",
+      "item": [
+        {
+          "name": "Dashboard de Órdenes",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ordenes?estado=ABIERTA",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "ordenes"],
+              "query": [{ "key": "estado", "value": "ABIERTA" }]
+            }
+          }
+        },
+        {
+          "name": "Reporte de Ventas del Día",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reportes/ventas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reportes", "ventas"]
+            }
+          }
+        },
+        {
+          "name": "Resumen de Encuestas",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenAdmin}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/encuestas/resumen",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "encuestas", "resumen"]
+            }
+          }
+        },
+        {
+          "name": "PF-14 Acceso Admin con Token Mesero Denegado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 403 Forbidden\", function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tokenMesero}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reportes/ventas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reportes", "ventas"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
