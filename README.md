@@ -106,11 +106,7 @@ Una vez iniciada la aplicación, acceda a la consola interactiva Swagger UI:
 La base de datos se inicializa automáticamente mediante Flyway con las siguientes cuentas de prueba (contraseña para todos: `Imperial123*`):
 
 | Rol | Nombre | Correo Electrónico | Contraseña |
-| :--- | :--- | :--- | :--- |
-| **ADMIN** | Carlos Méndez | `admin@imperial.com` | `Imperial123*` |
-| **COCINERO** | Chef Lin | `cocina@imperial.com` | `Imperial123*` |
-| **MESERO** | Andrés Gómez | `mesero@imperial.com` | `Imperial123*` |
-| **DOMICILIARIO** | Mateo Silva | `domicilio@imperial.com` | `Imperial123*` |
+
 
 ### Mesas Precargadas y Códigos QR
 
