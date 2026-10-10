@@ -103,7 +103,7 @@ Una vez iniciada la aplicación, acceda a la consola interactiva Swagger UI:
 
 ## 6. Usuarios y Credenciales Semilla (Seed Data)
 
-La base de datos se inicializa automáticamente mediante Flyway con las siguientes cuentas de prueba (contraseña para todos: `Imperial123*`):
+La base de datos se inicializa automáticamente mediante Flyway con las siguientes cuentas de prueba (contraseña para todos: `*******`):
 
 | Rol | Nombre | Correo Electrónico | Contraseña |
 
